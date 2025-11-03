@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Insulina - Dr. Russi</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <main class="container">
+        <header>
+            <h1>Calculadora de Formulación de Insulina</h1>
+            <p>Herramienta de consulta para el Dr. Russi</p>
+        </header>
+
+        <!-- SECCIÓN 1: FORMULACIÓN DE ESFEROS -->
+        <section class="form-section">
+            <h2>1. Cálculo de Esferos a Formular</h2>
+            <form id="formularioInsulina">
+                <div class="form-group">
+                    <label for="tipoInsulina">Tipo de Insulina:</label>
+                    <select id="tipoInsulina" required>
+                        <option value="">-- Selecciona una insulina --</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dosisUnidades">Dosis por inyección (U):</label>
+                        <input type="number" id="dosisUnidades" placeholder="Ej: 10" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inyeccionesDia">Inyecciones al día:</label>
+                        <input type="number" id="inyeccionesDia" placeholder="Ej: 2" min="1" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mesesFormulacion">Duración de la formulación (meses):</label>
+                    <input type="number" id="mesesFormulacion" placeholder="Ej: 3" min="1" required>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" id="btnCalcular">Calcular Esferos</button>
+                    <button type="button" id="btnLimpiar">Limpiar</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="resultados" class="result-section hidden">
+            <h2>Resultados de la Formulación</h2>
+            <div id="contenidoResultados">
+                <!-- Los resultados se insertarán aquí con JavaScript -->
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: CÁLCULO DE DOSIS INICIALES -->
+        <section class="form-section dose-calculator-section">
+            <h2>2. Cálculo de Dosis Inicial (Basal y Prandial)</h2>
+            <p>Esta calculadora utiliza el método de Dosis Total Diaria (TDD) para estimar las dosis de inicio.</p>
+            <form id="formularioDosis">
+                <div class="form-group">
+                    <label for="pesoPaciente">Peso del Paciente (kg):</label>
+                    <input type="number" id="pesoPaciente" placeholder="Ej: 70" min="1" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="factorTotal">Factor Total (Ft):</label>
+                    <input type="number" id="factorTotal" placeholder="Rango: 0.4 - 1.0 U/kg/día" min="0.4" max="1.0" step="0.1" required>
+                </div>
+                <div class="button-group">
+                    <button type="button" id="btnCalcularDosis">Calcular Dosis</button>
+                    <button type="button" id="btnLimpiarDosis">Limpiar</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="resultados-dosis" class="result-section hidden">
+            <h2>Resultados de la Dosis Inicial</h2>
+            <div id="contenidoResultadosDosis">
+                <!-- Los resultados de la dosis se insertarán aquí -->
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2024 Dr. Russi. Todos los derechos reservados.</p>
+        </footer>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
