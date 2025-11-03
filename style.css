@@ -117,22 +117,22 @@ button {
     transition: background-color 0.3s ease;
 }
 
-#btnCalcular, #btnCalcularDosis {
+/* --- Estilos Universales para Botones --- */
+.btn-calcular {
     background-color: var(--accent-color);
 }
 
-#btnCalcular:hover, #btnCalcularDosis:hover {
+.btn-calcular:hover {
     background-color: #218838;
 }
 
-#btnLimpiar, #btnLimpiarDosis {
+.btn-limpiar {
     background-color: #6c757d;
 }
 
-#btnLimpiar:hover, #btnLimpiarDosis:hover {
+.btn-limpiar:hover {
     background-color: #5a6268;
 }
-
 .result-section {
     margin-top: 30px;
     padding: 25px;
@@ -177,4 +177,24 @@ footer {
     .button-group {
         flex-direction: column;
     }
+}
+/* --- Estilos para la Sección de Referencias --- */
+.references-section {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-left: 4px solid var(--primary-color);
+    border-radius: 4px;
+}
+
+.references-section h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+    font-size: 18px;
+}
+
+.references-section p {
+    margin-bottom: 0;
+    font-size: 14px;
+    font-style: italic;
 }

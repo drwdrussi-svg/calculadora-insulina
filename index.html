@@ -13,12 +13,39 @@
     <main class="container">
         <header>
             <h1>Calculadora de Formulación de Insulina</h1>
-            <p>Herramienta de consulta para el Dr. Russi</p>
+            <p>Herramienta realizada por el Dr. Russi</p>
         </header>
 
-        <!-- SECCIÓN 1: FORMULACIÓN DE ESFEROS -->
+        <!-- SECCIÓN 1: CÁLCULO DE DOSIS INICIALES -->
+        <section class="form-section dose-calculator-section">
+            <h2>1. Cálculo de Dosis Inicial (Basal y Prandial)</h2>
+            <p>Esta calculadora utiliza el método de Dosis Total Diaria (TDD) para estimar las dosis de inicio.</p>
+            <form id="formularioDosis">
+                <div class="form-group">
+                    <label for="pesoPaciente">Peso del Paciente (kg):</label>
+                    <input type="number" id="pesoPaciente" placeholder="Ej: 70" min="1" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="factorTotal">Factor Total (Ft):</label>
+                    <input type="number" id="factorTotal" placeholder="Rango: 0.4 - 1.0 U/kg/día" min="0.4" max="1.0" step="0.1" required>
+                </div>
+                <div class="button-group">
+                    <button type="button" id="btnCalcularDosis" class="btn-calcular">Calcular Dosis</button>
+                    <button type="button" id="btnLimpiarDosis" class="btn-limpiar">Limpiar</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="resultados-dosis" class="result-section hidden">
+            <h2>Resultados de la Dosis Inicial</h2>
+            <div id="contenidoResultadosDosis">
+                <!-- Los resultados de la dosis se insertarán aquí -->
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: FORMULACIÓN DE ESFEROS -->
         <section class="form-section">
-            <h2>1. Cálculo de Esferos a Formular</h2>
+            <h2>2. Cálculo de Esferos a Formular</h2>
             <form id="formularioInsulina">
                 <div class="form-group">
                     <label for="tipoInsulina">Tipo de Insulina:</label>
@@ -44,8 +71,8 @@
                 </div>
 
                 <div class="button-group">
-                    <button type="button" id="btnCalcular">Calcular Esferos</button>
-                    <button type="button" id="btnLimpiar">Limpiar</button>
+                    <button type="button" id="btnCalcular" class="btn-calcular">Calcular Esferos</button>
+                    <button type="button" id="btnLimpiar" class="btn-limpiar">Limpiar</button>
                 </div>
             </form>
         </section>
@@ -57,31 +84,75 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 2: CÁLCULO DE DOSIS INICIALES -->
-        <section class="form-section dose-calculator-section">
-            <h2>2. Cálculo de Dosis Inicial (Basal y Prandial)</h2>
-            <p>Esta calculadora utiliza el método de Dosis Total Diaria (TDD) para estimar las dosis de inicio.</p>
-            <form id="formularioDosis">
-                <div class="form-group">
-                    <label for="pesoPaciente">Peso del Paciente (kg):</label>
-                    <input type="number" id="pesoPaciente" placeholder="Ej: 70" min="1" step="0.1" required>
-                </div>
-                <div class="form-group">
-                    <label for="factorTotal">Factor Total (Ft):</label>
-                    <input type="number" id="factorTotal" placeholder="Rango: 0.4 - 1.0 U/kg/día" min="0.4" max="1.0" step="0.1" required>
-                </div>
-                <div class="button-group">
-                    <button type="button" id="btnCalcularDosis">Calcular Dosis</button>
-                    <button type="button" id="btnLimpiarDosis">Limpiar</button>
-                </div>
-            </form>
+        <!-- SECCIÓN 3: AJUSTE DE INSULINA SEGÚN GLUCOMETRÍAS (ADA 2025) -->
+        <section class="form-section adjustment-calculator-section">
+            <h2>3. Ajuste de Insulina según Glucometrías (Basado en ADA 2025)</h2>
+            <p><strong>Nota:</strong> Esta herramienta sugiere un ajuste de titulación. Los cambios deben realizarse cada 3-4 días basados en patrones de glucemia, no en una sola lectura. Siempre prevalece el juicio clínico.</p>
+            
+            <!-- Calculadora de Ajuste Basal -->
+            <div class="calculator-subsection">
+                <h4>Ajuste de Insulina Basal (según glucemia en ayunas)</h4>
+                <p><strong>Objetivo ADA:</strong> 80 - 130 mg/dL</p>
+                <form id="formularioAjusteBasal">
+                    <div class="form-group">
+                        <label for="glucemiaAyunas">Glucemia en Ayunas (mg/dL):</label>
+                        <input type="number" id="glucemiaAyunas" placeholder="Ej: 150" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dosisBasalActual">Dosis Actual de Insulina Basal (U):</label>
+                        <input type="number" id="dosisBasalActual" placeholder="Ej: 20" min="0" required>
+                    </div>
+                    <div class="button-group">
+                        <button type="button" id="btnCalcularAjusteBasal" class="btn-calcular">Calcular Ajuste</button>
+                        <button type="button" id="btnLimpiarAjusteBasal" class="btn-limpiar">Limpiar</button>
+                    </div>
+                </form>
+                <section id="resultados-ajuste-basal" class="result-section hidden">
+                    <h3>Sugerencia de Ajuste Basal</h3>
+                    <div id="contenidoResultadosAjusteBasal"></div>
+                </section>
+            </div>
+
+            <hr>
+
+            <!-- Calculadora de Ajuste Prandial -->
+            <div class="calculator-subsection">
+                <h4>Ajuste de Insulina Prandial (según glucemia post-comida)</h4>
+                <p><strong>Objetivo ADA:</strong> &lt; 180 mg/dL</p>
+                <form id="formularioAjustePrandial">
+                    <div class="form-group">
+                        <label for="comidaAjuste">Comida Correspondiente:</label>
+                        <select id="comidaAjuste" required>
+                            <option value="">-- Selecciona --</option>
+                            <option value="Desayuno">Desayuno</option>
+                            <option value="Almuerzo">Almuerzo</option>
+                            <option value="Cena">Cena</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="glucemiaPostComida">Glucemia Post-Comida (mg/dL):</label>
+                        <input type="number" id="glucemiaPostComida" placeholder="Ej: 200" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dosisBoloActual">Dosis Actual del Bolo (U):</label>
+                        <input type="number" id="dosisBoloActual" placeholder="Ej: 10" min="0" required>
+                    </div>
+                    <div class="button-group">
+                        <button type="button" id="btnCalcularAjustePrandial" class="btn-calcular">Calcular Ajuste</button>
+                        <button type="button" id="btnLimpiarAjustePrandial" class="btn-limpiar">Limpiar</button>
+                    </div>
+                </form>
+                <section id="resultados-ajuste-prandial" class="result-section hidden">
+                    <h3>Sugerencia de Ajuste Prandial</h3>
+                    <div id="contenidoResultadosAjustePrandial"></div>
+                </section>
+            </div>
         </section>
 
-        <section id="resultados-dosis" class="result-section hidden">
-            <h2>Resultados de la Dosis Inicial</h2>
-            <div id="contenidoResultadosDosis">
-                <!-- Los resultados de la dosis se insertarán aquí -->
-            </div>
+        <!-- SECCIÓN DE REFERENCIAS -->
+        <section class="references-section">
+            <h3>Referencias</h3>
+            <p>Esta herramienta se basa en las recomendaciones de las guías clínicas para el manejo de la diabetes, incluyendo los estándares de la <strong>American Diabetes Association (ADA) Standards of Care in Diabetes—2025</strong>.</p>
         </section>
 
         <footer>

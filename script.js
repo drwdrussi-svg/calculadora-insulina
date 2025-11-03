@@ -43,6 +43,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultadosDosisSection = document.getElementById('resultados-dosis');
     const contenidoResultadosDosis = document.getElementById('contenidoResultadosDosis');
 
+    // Formulario de Ajuste Basal
+    const formularioAjusteBasal = document.getElementById('formularioAjusteBasal');
+    const glucemiaAyunasInput = document.getElementById('glucemiaAyunas');
+    const dosisBasalActualInput = document.getElementById('dosisBasalActual');
+    const btnCalcularAjusteBasal = document.getElementById('btnCalcularAjusteBasal');
+    const btnLimpiarAjusteBasal = document.getElementById('btnLimpiarAjusteBasal');
+    const resultadosAjusteBasalSection = document.getElementById('resultados-ajuste-basal');
+    const contenidoResultadosAjusteBasal = document.getElementById('contenidoResultadosAjusteBasal');
+
+    // Formulario de Ajuste Prandial
+    const formularioAjustePrandial = document.getElementById('formularioAjustePrandial');
+    const comidaAjusteSelect = document.getElementById('comidaAjuste');
+    const glucemiaPostComidaInput = document.getElementById('glucemiaPostComida');
+    const dosisBoloActualInput = document.getElementById('dosisBoloActual');
+    const btnCalcularAjustePrandial = document.getElementById('btnCalcularAjustePrandial');
+    const btnLimpiarAjustePrandial = document.getElementById('btnLimpiarAjustePrandial');
+    const resultadosAjustePrandialSection = document.getElementById('resultados-ajuste-prandial');
+    const contenidoResultadosAjustePrandial = document.getElementById('contenidoResultadosAjustePrandial');
+
 
     // --- FUNCIONES ---
     function populateInsulinDropdown() {
@@ -98,22 +117,106 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const tdd = peso * factorTotal;
-        const dosisBasal = 0.5 * tdd;
-        const dosisPrandialTotal = 0.5 * tdd;
-        const dosisPorComida = dosisPrandialTotal / 3;
+        
+        // Aplicamos Math.round() para redondear al número entero más cercano
+        const dosisBasal = Math.round(0.5 * tdd);
+        const dosisPrandialTotal = Math.round(0.5 * tdd);
+        const dosisPorComida = Math.round(dosisPrandialTotal / 3);
 
         contenidoResultadosDosis.innerHTML = `
-            <p><strong>Dosis Total Diaria (TDD):</strong> ${tdd.toFixed(1)} U</p>
-            <p><strong>Dosis Basal:</strong> ${dosisBasal.toFixed(1)} U (aproximadamente)</p>
-            <p><strong>Dosis Prandial Total:</strong> ${dosisPrandialTotal.toFixed(1)} U</p>
+            <p><strong>Dosis Total Diaria (TDD) de referencia:</strong> ${tdd.toFixed(1)} U</p>
+            <p><strong>Dosis Basal a formular:</strong> ${dosisBasal} U</p>
+            <p><strong>Dosis Prandial Total a formular:</strong> ${dosisPrandialTotal} U</p>
             <hr>
             <h3>Dosis por Comida (Bolo):</h3>
             <p style="font-size: 24px; color: var(--primary-color); font-weight: bold;">
-                ${dosisPorComida.toFixed(1)} U antes de cada comida (desayuno, almuerzo, cena)
+                ${dosisPorComida} U antes de cada comida (desayuno, almuerzo, cena)
             </p>
         `;
         
         resultadosDosisSection.classList.remove('hidden');
+    }
+
+    // Función para calcular ajuste basal (Basado en ADA 2025)
+    function calcularAjusteBasal() {
+        const glucemia = parseInt(glucemiaAyunasInput.value);
+        const dosisActual = parseInt(dosisBasalActualInput.value);
+
+        if (!glucemia || !dosisActual) {
+            alert('Por favor, completa todos los campos para el ajuste basal.');
+            return;
+        }
+
+        let ajuste = 0;
+        let recomendacion = '';
+        const objetivoMin = 80;
+        const objetivoMax = 130;
+
+        if (glucemia < 70) { // Hipoglucemia
+            ajuste = -Math.max(2, Math.round(dosisActual * 0.10));
+            recomendacion = 'Hipoglucemia. Reducir dosis basal.';
+        } else if (glucemia >= objetivoMin && glucemia <= objetivoMax) {
+            ajuste = 0;
+            recomendacion = 'Glucemia en meta. Mantener dosis basal.';
+        } else if (glucemia > objetivoMax) {
+            ajuste = Math.max(2, Math.round(dosisActual * 0.10));
+            recomendacion = 'Glucemia por encima de la meta. Aumentar dosis basal.';
+        }
+
+        const nuevaDosis = dosisActual + ajuste;
+        const dosisFinal = nuevaDosis > 0 ? nuevaDosis : 0;
+
+        contenidoResultadosAjusteBasal.innerHTML = `
+            <p><strong>Análisis:</strong> ${recomendacion}</p>
+            <p><strong>Ajuste sugerido:</strong> ${ajuste > 0 ? '+' : ''}${ajuste} U (aprox. 10% de la dosis, min 2U)</p>
+            <hr>
+            <h3>Nueva Dosis Basal Sugerida:</h3>
+            <p style="font-size: 24px; color: var(--primary-color); font-weight: bold;">
+                ${dosisFinal} U
+            </p>
+        `;
+        resultadosAjusteBasalSection.classList.remove('hidden');
+    }
+
+    // Función para calcular ajuste prandial (Basado en ADA 2025)
+    function calcularAjustePrandial() {
+        const comida = comidaAjusteSelect.value;
+        const glucemia = parseInt(glucemiaPostComidaInput.value);
+        const dosisActual = parseInt(dosisBoloActualInput.value);
+
+        if (!comida || !glucemia || !dosisActual) {
+            alert('Por favor, completa todos los campos para el ajuste prandial.');
+            return;
+        }
+
+        let ajuste = 0;
+        let recomendacion = '';
+        const objetivoMax = 180;
+
+        if (glucemia < 70) { // Hipoglucemia
+            ajuste = -Math.max(1, Math.round(dosisActual * 0.10));
+            recomendacion = `Hipoglucemia post-${comida.toLowerCase()}. Reducir bolo de ${comida}.`;
+        } else if (glucemia < objetivoMax) {
+            ajuste = 0;
+            recomendacion = `Glucemia post-${comida.toLowerCase()} en meta. Mantener bolo.`;
+        } else if (glucemia >= objetivoMax) {
+            ajuste = Math.max(1, Math.round(dosisActual * 0.10));
+            recomendacion = `Glucemia post-${comida.toLowerCase()} por encima de la meta. Aumentar bolo de ${comida}.`;
+        }
+
+        const nuevaDosis = dosisActual + ajuste;
+        const dosisFinal = nuevaDosis > 0 ? nuevaDosis : 0;
+
+        contenidoResultadosAjustePrandial.innerHTML = `
+            <p><strong>Análisis:</strong> ${recomendacion}</p>
+            <p><strong>Ajuste sugerido:</strong> ${ajuste > 0 ? '+' : ''}${ajuste} U (aprox. 10% de la dosis, min 1U)</p>
+            <hr>
+            <h3>Nuevo Bolo Sugerido para ${comida}:</h3>
+            <p style="font-size: 24px; color: var(--primary-color); font-weight: bold;">
+                ${dosisFinal} U
+            </p>
+        `;
+        resultadosAjustePrandialSection.classList.remove('hidden');
     }
 
     // Funciones para limpiar
@@ -127,11 +230,27 @@ document.addEventListener('DOMContentLoaded', () => {
         resultadosDosisSection.classList.add('hidden');
     }
 
+    function limpiarAjusteBasal() {
+        formularioAjusteBasal.reset();
+        resultadosAjusteBasalSection.classList.add('hidden');
+    }
+
+    function limpiarAjustePrandial() {
+        formularioAjustePrandial.reset();
+        resultadosAjustePrandialSection.classList.add('hidden');
+    }
+
     // --- EVENT LISTENERS ---
     btnCalcular.addEventListener('click', calcular);
     btnLimpiar.addEventListener('click', limpiar);
     btnCalcularDosis.addEventListener('click', calcularDosisIniciales);
     btnLimpiarDosis.addEventListener('click', limpiarDosis);
+    
+    // Nuevos listeners para los ajustes
+    btnCalcularAjusteBasal.addEventListener('click', calcularAjusteBasal);
+    btnLimpiarAjusteBasal.addEventListener('click', limpiarAjusteBasal);
+    btnCalcularAjustePrandial.addEventListener('click', calcularAjustePrandial);
+    btnLimpiarAjustePrandial.addEventListener('click', limpiarAjustePrandial);
 
     // --- INICIALIZACIÓN ---
     populateInsulinDropdown();
